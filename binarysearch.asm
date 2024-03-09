@@ -4,6 +4,7 @@
 	msg1: .asciiz "Found!"
 	msg2: .asciiz "Not found!"
 .text
+main:
 	li $v0, 5
 	syscall
 	move $s2, $v0
@@ -24,9 +25,10 @@ Next:
 	addi $s1, $s2, -1 #high
 	move $a0, $s0
 	move $a1, $s1
-	
 	jal Search
-	j Exit
+Exit:
+	li $v0, 10
+	syscall
 
 Search:
 	addi $sp, $sp, -12
@@ -34,13 +36,13 @@ Search:
 	sw $a0, 4($sp)
 	sw $a1, 0($sp)
 	add $s6, $a0, $a1
-	div $s6, $s6, 2
+	srl $s6, $s6, 1
 	sll $s7, $s6, 2
-	lw $t5, arr($s7)
-	bgt $s5, $t5, HighChange
-	blt $s5, $t5, LowChange
 	bgt $a0, $a1, Neq
-	beq $s5, $t5, Eq
+	lw $s3, arr($s7)
+	bgt $s5, $s3, LowChange
+	blt $s5, $s3, HighChange
+	beq $s5, $s3, Eq
 Eq:
 	li $v0, 4
 	move $t7, $a0
@@ -65,7 +67,7 @@ LowChange:
 	lw $ra, 8($sp)
 	lw $a0, 4($sp)
 	lw $a1, 0($sp)
-	addi $sp, $sp, -12
+	addi $sp, $sp, 12
 	jr $ra
 	
 HighChange:
@@ -74,10 +76,8 @@ HighChange:
 	lw $ra, 8($sp)
 	lw $a0, 4($sp)
 	lw $a1, 0($sp)
-	addi $sp, $sp, -12
+	addi $sp, $sp, 12
 	jr $ra
-Exit:
-	li $v0, 10
-	syscall
+
 
 	
